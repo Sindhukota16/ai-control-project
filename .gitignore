@@ -1,0 +1,17 @@
+# Secret keys - NEVER upload these
+.env
+
+# Python junk
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Results and logs (we'll decide later which ones to share)
+logs/
+results/raw/
+
+# Editor / OS files
+.vscode/
+.DS_Store
+Thumbs.db
