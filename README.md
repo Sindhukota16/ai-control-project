@@ -63,6 +63,13 @@ python src/sandbox.py      # Windows
 python3 src/sandbox.py     # Mac
 ```
 
+## Continuous integration
+
+GitHub Actions runs on pushes to `main`, pull requests targeting `main`, and
+when manually started. It checks Python syntax, builds the Docker image, and
+runs the sandbox smoke test. The test output is checked without printing the
+fake secret to the workflow logs.
+
 ## Plan (finish by Sunday, Nov 22, 2026)
 
 | Day | Date | Step |

@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sandbox:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check Python syntax
+        run: python -m compileall -q src
+
+      - name: Build sandbox image
+        run: docker build -t ai-control-sandbox ./sandbox
+
+      - name: Run sandbox smoke test
+        shell: bash
+        run: |
+          output="$(python src/sandbox.py)"
+
+          grep -Fxq "agent" <<< "$output"
+          grep -Fxq "/workspace" <<< "$output"
+          grep -Fq "main.tf" <<< "$output"
+          grep -Fq "Good: no internet inside the sandbox" <<< "$output"
+          grep -Fq "Sandbox stopped and removed. Step 1 works!" <<< "$output"
+
+          if grep -Fq "WARNING: internet is ON" <<< "$output"; then
+            echo "Sandbox smoke test detected network access." >&2
+            exit 1
+          fi
+
+          echo "Sandbox smoke test passed."
