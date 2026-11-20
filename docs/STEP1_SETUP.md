@@ -105,22 +105,50 @@ git config --global user.email "your-github-email@example.com"
 ```
 
 ### C2. Download the empty repo
-1. Go to your Documents folder in the terminal:
-   ```bash
-   cd Documents
-   ```
-2. Download the repo (paste **your** link from B2):
+
+> **Lesson from Day 1:** `git clone` **creates the project folder for you**, inside whatever folder your terminal is in. Don't make the folder by hand. Clone into `C:\Projects` (Windows), **not** your Documents folder, because Documents is often synced to OneDrive and that caused confusion.
+
+1. Make a Projects folder and go into it.
+   - **Windows:**
+     ```bash
+     cd C:\
+     ```
+     ```bash
+     mkdir Projects
+     ```
+     ```bash
+     cd C:\Projects
+     ```
+     (If `mkdir` says the folder already exists, that's fine.)
+   - **Mac:**
+     ```bash
+     mkdir -p ~/Projects && cd ~/Projects
+     ```
+2. Download the repo. On your GitHub repo page, click the green **Code** button and copy the link, then:
    ```bash
    git clone https://github.com/YOUR-USERNAME/ai-control-project.git
    ```
-   It may warn "You appear to have cloned an empty repository". **That's normal.**
+   It may warn "You appear to have cloned an empty repository". **That's normal.** This command just created the folder `ai-control-project`.
+3. Go into it:
+   ```bash
+   cd ai-control-project
+   ```
 
 ### C3. Put the starter files in the folder
-1. Download the starter zip (`ai-control-project-step1.zip`) and unzip it.
-2. Copy **everything inside** the unzipped folder into `Documents/ai-control-project`.
-3. In VS Code: **File > Open Folder** > choose `Documents/ai-control-project` > **Open**.
+
+> **Lesson from Day 1:** when you unzip, Windows makes an outer folder (`ai-control-project-step1`) with the real project folder **inside** it. Copy what's inside the **inner** `ai-control-project` folder, not the outer one.
+
+1. Download `ai-control-project-step1.zip`, right-click it, and choose **Extract All**.
+2. Open the extracted folder, then open the `ai-control-project` folder **inside** it.
+3. Select everything (`Ctrl + A`), copy (`Ctrl + C`), go to `C:\Projects\ai-control-project`, and paste (`Ctrl + V`).
+4. Open the project in VS Code. Windows tends to open OneDrive by default, so either:
+   - **File > Open Folder**, click the **address bar** at the top, type `C:\Projects\ai-control-project`, press **Enter**, then **Select Folder**, or
+   - type this in the terminal:
+     ```bash
+     code -r C:\Projects\ai-control-project
+     ```
    If it asks "Do you trust the authors?", click **Yes**.
-4. On the left (the Explorer panel), check you can see:
+5. On the left (the Explorer panel), check you can see:
    ```
    .env.example
    .gitignore
@@ -129,9 +157,10 @@ git config --global user.email "your-github-email@example.com"
    sandbox/
    src/
    ```
-   **Don't see `.gitignore` or `.env.example`?** Files starting with a dot are hidden on Mac and Windows, so they may not have been copied. Fix: in VS Code, click the **New File** icon, name it `.gitignore`, and paste in the contents from the zip (open the zip's copy in VS Code to read it). Do the same for `.env.example`.
+   **Don't see `.gitignore` or `.env.example`?** Files starting with a dot can get missed when copying. Copy them again from the unzipped folder.
+6. Open a new terminal: **Terminal > New Terminal**. The line should end in `C:\Projects\ai-control-project>`. **From now on, every command runs from here.**
 
-5. Open a new terminal for this folder: **Terminal > New Terminal**. The terminal should now show a path ending in `ai-control-project`. **From now on, every command runs from here.**
+> **PowerShell or Git Bash?** The top of the terminal panel says which one you're using (`powershell` or `bash`). Git, Docker, and Python commands work the same in both. But a few commands only work in one: `Copy-Item` and `$env:` are **PowerShell only**; `cp` and `ls -a` are **Git Bash** (PowerShell also accepts `cp`, but uses `ls -Force` instead of `ls -a`). If you see "command not found", this is usually why.
 
 ---
 
@@ -231,7 +260,7 @@ Your friend does:
 2. Accepts the GitHub invitation (from B3)
 3. **C1** (with *their own* name and email)
 4. **C2**, using Sindhu's repo link. **Skip C3**: the files download automatically.
-5. **File > Open Folder** > `Documents/ai-control-project`, then **Terminal > New Terminal**
+5. **File > Open Folder** > `C:\Projects\ai-control-project`, then **Terminal > New Terminal**
 6. **Part D** (build and test)
 7. Opens `docs/TEAM_NOTES.md`, ticks the Day 1 boxes, writes one thing they learned, then:
    ```bash
@@ -250,7 +279,8 @@ Your friend does:
 | `git` / `python` / `docker` "not recognized" (Windows) | Close and reopen VS Code. If Python is still not found, reinstall it and tick **"Add python.exe to PATH"**. |
 | `python` not found (Mac) | Use `python3` instead. |
 | `Cannot connect to the Docker daemon` or `error during connect` | Docker Desktop isn't running. Open it and wait for **Engine running**. |
-| `docker build` says `failed to read dockerfile` | You're in the wrong folder. Run `cd Documents/ai-control-project` and try again. |
+| `docker build` says `failed to read dockerfile` or `path "./sandbox" not found` | You're in the wrong folder (often the outer unzip folder). Open `C:\Projects\ai-control-project` (see C3) and try again. |
+| `Copy-Item: command not found` | Your terminal is Git Bash, not PowerShell. Use `cp -r` instead, or copy with File Explorer. |
 | `python: can't open file 'src/sandbox.py'` | Same thing: you're in the wrong folder. |
 | Test prints `WARNING: internet is ON` | Something's wrong with the setup. Don't continue. Share the output with your partner (or Claude). |
 | `git push` asks for a password | GitHub doesn't accept your normal password here. Use the sign-in popup, or install **GitHub Desktop**, sign in there once, and try again. |

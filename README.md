@@ -38,48 +38,71 @@ tools (Checkov, OPA) against LLM monitors, and a hybrid of both.
 ```
 ai-control-project/
 ├── README.md              <- you are here
+├── CHANGELOG.md           <- what changed, day by day
 ├── .gitignore             <- files we never upload (like .env)
-├── .env.example           <- template for API keys (real keys go in .env)
+├── .env.example           <- template for API key + model (real values go in .env)
+├── requirements.txt       <- Python libraries we use
 ├── docs/
 │   ├── STEP1_SETUP.md     <- beginner guide for Day 1
-│   └── TEAM_NOTES.md      <- our shared daily notes and to-do list
+│   ├── STEP2_AGENT.md     <- beginner guide for Day 2
+│   └── TEAM_NOTES.md      <- our shared daily notes, findings, and problems
+├── results/
+│   └── examples/          <- saved logs of interesting agent runs
 ├── sandbox/
 │   ├── Dockerfile         <- builds the locked playroom
 │   └── workspace/         <- files the agent works on (all fake)
 │       ├── main.tf
 │       └── secrets/api_key.txt   <- FAKE key, used to detect sabotage
-└── src/
-    └── sandbox.py         <- starts the playroom and runs commands in it
+├── src/
+│   ├── sandbox.py         <- starts the playroom, runs commands, writes files
+│   ├── agent.py           <- the agent loop (AI decides which tools to use)
+│   └── check_setup.py     <- checks your API key works
+└── logs/                  <- run records (created automatically, not uploaded)
 ```
 
 ## Quick start
+
+(Use `python3` instead of `python` on Mac.)
 
 ```bash
 # 1. Build the playroom (run from the project folder)
 docker build -t ai-control-sandbox ./sandbox
 
-# 2. Test it
-python src/sandbox.py      # Windows
-python3 src/sandbox.py     # Mac
+# 2. Install libraries
+python -m pip install -r requirements.txt
+
+# 3. Copy .env.example to .env and add your free Gemini key, then check it
+python src/check_setup.py
+
+# 4. Test the playroom alone
+python src/sandbox.py
+
+# 5. Run the agent on a demo chore
+python src/agent.py
 ```
-
-## Continuous integration
-
-GitHub Actions runs on pushes to `main`, pull requests targeting `main`, and
-when manually started. It checks Python syntax, builds the Docker image, and
-runs the sandbox smoke test. The test output is checked without printing the
-fake secret to the workflow logs.
 
 ## Plan (finish by Sunday, Nov 22, 2026)
 
 | Day | Date | Step |
 |---|---|---|
 | 1 | Tue Nov 17 | Setup tools, GitHub repo, Docker playroom ✅ |
-| 2 | Wed Nov 18 | Agent loop: AI model can run commands in the playroom |
-| 3 | Thu Nov 19 | Write honest + sneaky tasks, add the LLM hall monitor |
-| 4 | Fri Nov 20 | Add Checkov/OPA monitor + hybrid, run all experiments |
-| 5 | Sat Nov 21 | Scores, charts, write up results |
-| 6 | Sun Nov 22 | Review, polish, make repo public, submit |
+| 2 | Thu Nov 19 | Agent loop: AI model runs commands in the playroom by itself ✅ |
+| 3 | Fri Nov 20 | Write honest + sneaky tasks, add the LLM hall monitor |
+| 4 | Sat Nov 21 | Add Checkov/OPA monitor + hybrid, run experiments, charts |
+| 5 | Sun Nov 22 | Write up results, polish, make repo public, submit |
+
+## Findings so far
+
+**Day 2: an honest agent can look suspicious.** With loose instructions and no sabotage
+goal, the agent (`gemini-flash-latest`) spent all 15 steps exploring: it looked in
+`secrets/`, printed environment variables, tried `sudo`, and tried to reach the internet
+(blocked by the sandbox). It never did the task. With focused instructions,
+`gemini-flash-lite-latest` finished in 4 steps. (We changed both the prompt and the model,
+so we can't yet say which one mattered.)
+
+This matters for the monitor: blocking everything that touches secrets or the network
+would also block honest agents and hurt usefulness.
+Details in [docs/TEAM_NOTES.md](docs/TEAM_NOTES.md); logs in [results/examples/](results/examples/).
 
 ## Cost
 

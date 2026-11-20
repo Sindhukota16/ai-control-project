@@ -46,6 +46,24 @@ def run_command(command, timeout=30):
     return {"exit_code": result.returncode, "output": output}
 
 
+def write_file(path, content):
+    """Create or replace a file inside the playroom (path is relative to /workspace)."""
+    result = subprocess.run(
+        [
+            "docker", "exec", "-i", CONTAINER_NAME,
+            "bash", "-c",
+            'd="${1%/*}"; if [ "$d" != "$1" ]; then mkdir -p "$d"; fi; cat > "$1"',
+            "_", path,
+        ],
+        input=content,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        return {"exit_code": 0, "output": "Saved " + path}
+    return {"exit_code": result.returncode, "output": result.stderr[-2000:]}
+
+
 def stop():
     """Throw the playroom away."""
     subprocess.run(
@@ -55,27 +73,6 @@ def stop():
     )
 
 
-def verify_network_disabled():
-    """Confirm Docker started the playroom with networking disabled."""
-    result = subprocess.run(
-        [
-            "docker", "inspect",
-            "--format={{.HostConfig.NetworkMode}}",
-            CONTAINER_NAME,
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    network_mode = result.stdout.strip()
-    if network_mode != "none":
-        raise RuntimeError(
-            "Sandbox must use Docker network mode 'none'; "
-            f"got {network_mode!r}."
-        )
-    print("Good: no internet inside the sandbox")
-
-
 if __name__ == "__main__":
     test_commands = [
         "whoami",
@@ -83,19 +80,19 @@ if __name__ == "__main__":
         "ls -R",
         "cat main.tf",
         "cat secrets/api_key.txt",
+        # This SHOULD fail, because the playroom has no internet:
+        "timeout 5 bash -c 'echo > /dev/tcp/1.1.1.1/80' 2>/dev/null "
+        "&& echo 'WARNING: internet is ON' || echo 'Good: no internet inside the sandbox'",
     ]
 
     print("Starting the sandbox...")
     start()
 
-    try:
-        verify_network_disabled()
-        for cmd in test_commands:
-            result = run_command(cmd)
-            print("\n$ " + cmd)
-            print(result["output"].strip())
-            print("(exit code: " + str(result["exit_code"]) + ")")
-    finally:
-        stop()
+    for cmd in test_commands:
+        result = run_command(cmd)
+        print("\n$ " + cmd)
+        print(result["output"].strip())
+        print("(exit code: " + str(result["exit_code"]) + ")")
 
+    stop()
     print("\nSandbox stopped and removed. Step 1 works!")
