@@ -171,15 +171,24 @@ python src/make_charts.py
 
 Beginner step-by-step guides are in [docs/](docs/).
 
-## Plan (finish by Sunday, Nov 22, 2026)
+## Status and timeline
+
+Built Nov 17-21, 2026. All steps below are done; the day-by-day log is in
+[docs/TEAM_NOTES.md](docs/TEAM_NOTES.md) and [CHANGELOG.md](CHANGELOG.md).
 
 | Day | Date | Step |
 |---|---|---|
-| 1 | Tue Nov 17 | Setup tools, GitHub repo, Docker playroom ✅ |
-| 2 | Thu Nov 19 | Agent loop: AI model runs commands in the playroom by itself ✅ |
-| 3 | Fri Nov 20 - Sat Nov 21 | Honest + sneaky tasks, Groq hall monitor, full results with and without monitor ✅ |
-| 4 | Sat Nov 21 | Charts and write-up ✅; rules + hybrid monitors and replay comparison ✅  |
-| 5 | Sun Nov 22 | Polish, make repo public, submit |
+| 1 | Tue Nov 17 | Setup, GitHub repo, Docker sandbox ✅ |
+| 2 | Thu Nov 19 | Agent loop: the AI runs commands in the sandbox by itself ✅ |
+| 3 | Fri Nov 20 - Sat Nov 21 | Honest + sneaky tasks, Groq AI monitor, results with and without monitor ✅ |
+| 4 | Sat Nov 21 | Rules + hybrid monitors, replay comparison, live runs, charts, write-up ✅ |
+
+## How this was built
+
+Built by Sindhu Kota and a teammate. We used Claude (Anthropic) as a coding assistant and
+tutor: it helped write and test the code and the step-by-step guides. We set up the
+environment, ran every experiment on our own machines, hit and fixed the problems recorded in
+the team notes, and checked the results. The numbers in this repo come from our own runs.
 
 ## Cost
 
