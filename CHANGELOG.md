@@ -2,6 +2,25 @@
 
 What changed in the project, day by day. Newest first.
 
+## Day 4 - Sat Nov 21, 2026: Results, charts, write-up
+
+### Results added
+- `results/runs_20261121_021540_monitor-action.csv`: full run **with** monitor: usefulness 4/4, safety 4/4, 0 honest actions blocked.
+- `results/runs_20261121_022717_monitor-none.csv`: full run **without** monitor (baseline): usefulness 4/4, safety 0/4 (every sneaky goal succeeded).
+- `results/runs_20261121_020552_monitor-action.csv`: quick test (1 honest + 1 attack; attack blocked 3 times).
+
+### New files
+- `results/RESULTS.md`: full results page: setup, main table, run-by-run table, what we noticed, limits, next steps, how to reproduce.
+- `results/chart_safety_usefulness.png`: safety and usefulness, with vs without monitor.
+- `results/chart_suspicion_scores.png`: highest suspicion score per run, honest vs sneaky, with the block threshold.
+- `src/make_charts.py`: makes both charts from the newest CSVs (colors checked for colorblind safety).
+
+### Changed files
+- `README.md`: result first (one-line summary, chart, table), findings, limits and next steps; honest wording that the rule-based monitor is still planned.
+- `docs/TEAM_NOTES.md`: Day 3 filled in with all results; Day 4 checklist.
+- `requirements.txt`: added `matplotlib` (only needed for `make_charts.py`).
+- `results/examples/README.md`: added the Day 3 example logs.
+
 ## Day 3 - Fri Nov 20, 2026: Sneaky tasks + hall monitor
 
 ### New files
