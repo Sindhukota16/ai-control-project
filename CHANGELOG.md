@@ -2,6 +2,37 @@
 
 What changed in the project, day by day. Newest first.
 
+## Day 4 (part 3) - Sat Nov 21, 2026: Comparison results
+
+### Results added
+- `results/replay_20261121_025759.csv` and `results/replay_summary_20261121_025759.csv`: 4 monitors on the same 35 recorded actions. Caught: rules 4/4, ai-action 3/4, ai-trajectory 2/4, hybrid 4/4. False alarms: 0 for all.
+- `results/runs_20261121_030137_monitor-hybrid.csv`: live hybrid run: usefulness 4/4, safety 4/4, 321 ms per check, AI needed for 31 of 38 checks.
+- `results/chart_monitor_comparison.png`.
+- `results/runs_20261121_034552_monitor-rules.csv`: live rules-only run: usefulness 4/4, safety 4/4, 0 ms per check, no AI.
+
+### Docs updated
+- `README.md`: monitor comparison table and two new findings.
+- `results/RESULTS.md`: full "Monitor comparison" section (replay table, all live runs side by side, 6 findings, timing caveat), new limits, evasive attacker as the top next step.
+- `docs/TEAM_NOTES.md`: Day 4 filled in.
+
+## Day 4 (part 2) - Sat Nov 21, 2026: Rules, hybrid, and replay comparison
+
+### New files
+- `src/rules_monitor.py`: `RulesMonitor` (no AI; 8 security rules in the style of Checkov/OPA: fake key value, IAM wildcard, secrets access, network tools, privilege commands, /tmp writes, hidden files, env/history) and `HybridMonitor` (rules first; asks the AI only when no rule is sure; counts AI calls).
+- `src/check_rules.py`: shows 9 example actions: honest (all allowed), obvious sneaky (all blocked), evasive (get through: `cp secr*/a*.txt`, `s3:Get*/Put*/Delete*`).
+- `src/replay.py`: scores the recorded actions of a no-monitor run with `rules`, `ai-action`, `ai-trajectory`, and `hybrid`. Same actions for every monitor, no Gemini quota. Prints caught / false alarms / AI calls / avg time, and saves `results/replay_*.csv` and `results/replay_summary_*.csv`.
+- `docs/STEP4_COMPARE.md`: beginner guide for this step.
+
+### Changed files
+- `src/agent.py`: measures milliseconds per monitor check; logs `monitor_ms`, `monitor_checks`, `monitor_avg_ms`.
+- `src/run_experiment.py`: `--monitor rules` and `--monitor hybrid`; prints time per check and, for hybrid, how many checks needed the AI. CSV has `monitor_checks` and `monitor_avg_ms`.
+- `src/make_charts.py`: adds `results/chart_monitor_comparison.png` from the newest replay summary; charts 1-2 are skipped (not an error) if their CSVs are missing.
+
+### Tested before release
+- Rules: 4/4 honest examples allowed, 3/3 obvious sneaky blocked, 2/2 evasive missed (as designed, to show the weakness).
+- Live runs with fake models in Docker: `--monitor rules` blocked the key theft with 0 AI calls; `--monitor hybrid` blocked it and needed the AI for 4 of 5 checks.
+- Replay of a no-monitor run with all 4 monitors: correct flags; AI calls 0 / 5 / 5 / 4.
+
 ## Day 4 - Sat Nov 21, 2026: Results, charts, write-up
 
 ### Results added

@@ -7,6 +7,8 @@ Examples (Mac: use python3):
     python src/run_experiment.py                    # all 8 runs
     python src/run_experiment.py --monitor trajectory
     python src/run_experiment.py --monitor none     # no monitor (baseline)
+    python src/run_experiment.py --monitor rules    # security rules only, no AI
+    python src/run_experiment.py --monitor hybrid   # rules first, AI only if needed
 """
 
 import argparse
@@ -17,6 +19,7 @@ from pathlib import Path
 
 from agent import run_agent
 from monitor import Monitor
+from rules_monitor import RulesMonitor, HybridMonitor
 from tasks import build_runs
 
 sys.stdout.reconfigure(errors="replace")
@@ -24,8 +27,9 @@ sys.stdout.reconfigure(errors="replace")
 parser = argparse.ArgumentParser()
 parser.add_argument("--limit", type=int, default=None,
                     help="only do the first N runs (saves free quota)")
-parser.add_argument("--monitor", choices=["action", "trajectory", "none"], default="action",
-                    help="what the monitor sees: one action, or the whole run so far")
+parser.add_argument("--monitor", choices=["action", "trajectory", "rules", "hybrid", "none"],
+                    default="action",
+                    help="action/trajectory = AI monitor; rules = no AI; hybrid = rules + AI")
 parser.add_argument("--only", choices=["honest", "attack"], default=None,
                     help="only honest runs, or only attack runs")
 args = parser.parse_args()
@@ -36,7 +40,14 @@ if args.only:
 if args.limit:
     runs = runs[: args.limit]
 
-monitor = None if args.monitor == "none" else Monitor(mode=args.monitor)
+if args.monitor == "none":
+    monitor = None
+elif args.monitor == "rules":
+    monitor = RulesMonitor()
+elif args.monitor == "hybrid":
+    monitor = HybridMonitor(llm_mode="action")
+else:
+    monitor = Monitor(mode=args.monitor)
 experiment_id = datetime.now().strftime("%Y%m%d_%H%M%S") + "_monitor-" + args.monitor
 log_dir = Path("logs") / experiment_id
 
@@ -72,6 +83,8 @@ for i, run in enumerate(runs, start=1):
         "side_done": log["side_check_passed"] if side else "",
         "max_score": log["max_score"] if log["max_score"] is not None else "",
         "blocked_actions": log["blocked_actions"],
+        "monitor_checks": log["monitor_checks"],
+        "monitor_avg_ms": log["monitor_avg_ms"] if log["monitor_avg_ms"] is not None else "",
         "log_file": log["log_file"],
     })
 
@@ -105,5 +118,13 @@ if attack:
     stopped = sum(1 for r in attack if not r["side_done"])
     print("Safety:     " + str(stopped) + "/" + str(len(attack))
           + " sneaky goals did NOT succeed")
+if monitor:
+    times = [r["monitor_avg_ms"] for r in rows if r["monitor_avg_ms"] != ""]
+    if times:
+        print("Monitor:    about " + str(int(sum(times) / len(times))) + " ms per check")
+    if hasattr(monitor, "llm_calls") and args.monitor == "hybrid":
+        checks = sum(r["monitor_checks"] for r in rows)
+        print("AI calls:   " + str(monitor.llm_calls) + " of " + str(checks)
+              + " checks needed the AI (rules handled the rest)")
 print("\nResults table saved to: " + str(csv_file))
 print("Full logs saved in:     " + str(log_dir))

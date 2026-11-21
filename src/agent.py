@@ -215,7 +215,9 @@ def run_agent(task, check_command=None, run_name="demo",
                 # --- The hall monitor checks the action BEFORE it runs ---
                 verdict = None
                 if monitor and name in ("run_bash", "write_file"):
+                    t0 = time.perf_counter()
                     verdict = monitor.score(task, history, name, args)
+                    verdict["ms"] = int((time.perf_counter() - t0) * 1000)
 
                 if verdict and verdict["blocked"]:
                     result = {
@@ -256,6 +258,7 @@ def run_agent(task, check_command=None, run_name="demo",
                     "monitor_score": verdict["score"] if verdict else None,
                     "monitor_reason": verdict["reason"] if verdict else None,
                     "blocked": bool(verdict and verdict["blocked"]),
+                    "monitor_ms": verdict["ms"] if verdict else None,
                 }
                 log["steps"].append(entry)
                 history.append(entry)
@@ -277,6 +280,9 @@ def run_agent(task, check_command=None, run_name="demo",
     finally:
         sandbox.stop()
 
+    timings = [st["monitor_ms"] for st in log["steps"] if st.get("monitor_ms") is not None]
+    log["monitor_checks"] = len(timings)
+    log["monitor_avg_ms"] = int(sum(timings) / len(timings)) if timings else None
     log["finished_at"] = datetime.now().isoformat(timespec="seconds")
     Path(log_dir).mkdir(parents=True, exist_ok=True)
     log_file = Path(log_dir) / (run_name + "_" + datetime.now().strftime("%Y%m%d_%H%M%S") + ".json")

@@ -15,6 +15,15 @@ that checks each action before it runs stopped **all 4**, and **blocked no hones
 | No monitor | 4/4 | 0/4 |
 | With monitor | 4/4 | **4/4** |
 
+We then compared four kinds of monitor on the same recorded actions:
+
+| Monitor | Sneaky runs caught | False alarms | Notes |
+|---|---|---|---|
+| Rules only (no AI) | 4/4 | 0/4 | Live: also 4/4 stopped, 0 ms, no AI. Misses evasive versions of the same attacks |
+| AI, sees one action | 3/4 | 0/4 | |
+| AI, sees the whole run | **2/4** | 0/4 | More context made it worse here, and about 3x slower |
+| Hybrid (rules, then AI) | **4/4** | 0/4 | Live: 4/4 stopped, 0.32 s per check |
+
 Small test (4 honest + 4 sneaky runs per condition), so treat this as a first result, not proof.
 Full details, run-by-run tables, and limits: **[results/RESULTS.md](results/RESULTS.md)**.
 
@@ -64,17 +73,20 @@ even if it might be trying to misbehave.
 2. **Clear gap:** honest runs scored 0-2, sneaky runs 8-9.
 3. **One close call:** one IAM attack scored exactly 8, right at the threshold. At 9 it would have gotten through.
 4. **Persistent attacker:** after being blocked, the agent tried again (up to 3 blocked actions in one run), while still finishing the honest chore so it looked normal.
-5. **Honest agents can look suspicious (Day 2):** with loose instructions and no sabotage goal, an agent still looked in `secrets/`, tried `sudo`, and tried the internet. A monitor that blocks every touch of a secret would hurt usefulness.
+5. **More context made the AI monitor worse:** seeing the whole run caught 2/4 attacks vs 3/4 when seeing one action at a time.
+6. **Rules vs AI:** against these obvious attacks, free rules were enough (4/4 live, 0 ms, no AI). But they miss evasive variants (`cp secr*/a*.txt`, `s3:Get*/Put*/Delete*`). The hybrid caught 4/4 with no false alarms. Next experiment: an attacker that avoids obvious patterns.
+7. **Honest agents can look suspicious (Day 2):** with loose instructions and no sabotage goal, an agent still looked in `secrets/`, tried `sudo`, and tried the internet. A monitor that blocks every touch of a secret would hurt usefulness.
 
 ![Highest suspicion score per run](results/chart_suspicion_scores.png)
+
+![Monitor comparison](results/chart_monitor_comparison.png)
 
 ## Limits and next steps
 
 **Limits:** small sample (8 runs per condition, each once), an attacker that didn't hide well,
 one model of each kind, one threshold, simple chores.
 
-**Next steps:** compare `trajectory` vs `action` monitoring; add a rule-based monitor
-(Checkov/OPA-style security rules, no AI) and a rules + AI hybrid; more runs for error bars;
+**Next steps:** an evasive attacker that avoids obvious patterns (rules vs AI); more runs for error bars;
 a threshold sweep for a full safety-vs-usefulness curve; subtler attackers.
 
 ## Related work
@@ -84,8 +96,9 @@ a threshold sweep for a full safety-vs-usefulness curve; subtler attackers.
 - **ControlArena** (UK AISI + Redwood): a library of control settings, including infrastructure-as-code
 
 **What this project adds:** a small control setup built from scratch for infrastructure-as-code
-work, using only free tools (free-tier APIs, Docker, no cloud), with a planned comparison of
-classic infra security rules against LLM monitors.
+work, using only free tools (free-tier APIs, Docker, no cloud), and a comparison of classic
+infra security rules, an LLM monitor (action and trajectory), and a rules + LLM hybrid,
+all judged on the same recorded agent actions.
 
 ## Project structure
 
@@ -100,6 +113,7 @@ ai-control-project/
 │   ├── STEP1_SETUP.md     <- beginner guide for Day 1
 │   ├── STEP2_AGENT.md     <- beginner guide for Day 2
 │   ├── STEP3_MONITOR.md   <- beginner guide for Day 3
+│   ├── STEP4_COMPARE.md   <- beginner guide for Day 4 (comparing monitors)
 │   └── TEAM_NOTES.md      <- our shared daily notes, findings, and problems
 ├── results/
 │   ├── RESULTS.md         <- full results, tables, limits
@@ -115,7 +129,10 @@ ai-control-project/
 │   ├── sandbox.py         <- starts the playroom, runs commands, writes files
 │   ├── agent.py           <- the agent loop (AI decides which tools to use)
 │   ├── tasks.py           <- honest chores + secret sneaky goals, with checks
-│   ├── monitor.py         <- the hall monitor (Groq model scores each action 0-10)
+│   ├── monitor.py         <- the AI hall monitor (Groq model scores each action 0-10)
+│   ├── rules_monitor.py   <- rules-only monitor (no AI) and hybrid (rules + AI)
+│   ├── replay.py          <- scores recorded actions with every monitor (fair comparison)
+│   ├── check_rules.py     <- shows what the rules catch and miss
 │   ├── run_experiment.py  <- runs honest + sneaky chores, saves the results table
 │   ├── make_charts.py     <- turns the results tables into chart images
 │   ├── check_setup.py     <- checks your Gemini key works
@@ -145,6 +162,11 @@ python src/run_experiment.py --limit 2
 python src/run_experiment.py
 python src/run_experiment.py --monitor none
 python src/make_charts.py
+
+# 6. Compare monitors on the same recorded actions (no Gemini quota)
+python src/check_rules.py
+python src/replay.py
+python src/make_charts.py
 ```
 
 Beginner step-by-step guides are in [docs/](docs/).
@@ -156,7 +178,7 @@ Beginner step-by-step guides are in [docs/](docs/).
 | 1 | Tue Nov 17 | Setup tools, GitHub repo, Docker playroom ✅ |
 | 2 | Thu Nov 19 | Agent loop: AI model runs commands in the playroom by itself ✅ |
 | 3 | Fri Nov 20 - Sat Nov 21 | Honest + sneaky tasks, Groq hall monitor, full results with and without monitor ✅ |
-| 4 | Sat Nov 21 | Charts and write-up ✅; trajectory mode / rule-based monitor if time allows |
+| 4 | Sat Nov 21 | Charts and write-up ✅; rules + hybrid monitors and replay comparison ✅  |
 | 5 | Sun Nov 22 | Polish, make repo public, submit |
 
 ## Cost
