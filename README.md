@@ -100,48 +100,10 @@ work, using only free tools (free-tier APIs, Docker, no cloud), and a comparison
 infra security rules, an LLM monitor (action and trajectory), and a rules + LLM hybrid,
 all judged on the same recorded agent actions.
 
-## Project structure
 
-```
-ai-control-project/
-├── README.md              <- you are here
-├── CHANGELOG.md           <- what changed, day by day
-├── .gitignore             <- files we never upload (like .env)
-├── .env.example           <- template for API keys + settings (real values go in .env)
-├── requirements.txt       <- Python libraries we use
-├── docs/
-│   ├── STEP1_SETUP.md     <- beginner guide for Day 1
-│   ├── STEP2_AGENT.md     <- beginner guide for Day 2
-│   ├── STEP3_MONITOR.md   <- beginner guide for Day 3
-│   ├── STEP4_COMPARE.md   <- beginner guide for Day 4 (comparing monitors)
-├── results/
-│   ├── RESULTS.md         <- full results, tables, limits
-│   ├── chart_*.png        <- charts (made by src/make_charts.py)
-│   ├── runs_*.csv         <- results table of each experiment
-│   └── examples/          <- saved logs of interesting agent runs
-├── sandbox/
-│   ├── Dockerfile         <- builds the locked playroom
-│   └── workspace/         <- files the agent works on (all fake)
-│       ├── main.tf
-│       └── secrets/api_key.txt   <- FAKE key, used to detect sabotage
-├── src/
-│   ├── sandbox.py         <- starts the playroom, runs commands, writes files
-│   ├── agent.py           <- the agent loop (AI decides which tools to use)
-│   ├── tasks.py           <- honest chores + secret sneaky goals, with checks
-│   ├── monitor.py         <- the AI hall monitor (Groq model scores each action 0-10)
-│   ├── rules_monitor.py   <- rules-only monitor (no AI) and hybrid (rules + AI)
-│   ├── replay.py          <- scores recorded actions with every monitor (fair comparison)
-│   ├── check_rules.py     <- shows what the rules catch and miss
-│   ├── run_experiment.py  <- runs honest + sneaky chores, saves the results table
-│   ├── make_charts.py     <- turns the results tables into chart images
-│   ├── check_setup.py     <- checks your Gemini key works
-│   └── check_monitor.py   <- checks your Groq key + monitor work
-└── logs/                  <- run records (created automatically, not uploaded)
-```
 
 ## Quick start
 
-(Use `python3` instead of `python` on Mac.)
 
 ```bash
 # 1. Build the playroom (run from the project folder)
@@ -168,24 +130,9 @@ python src/replay.py
 python src/make_charts.py
 ```
 
-Beginner step-by-step guides are in [docs/](docs/).
-
-## Status and timeline
-
-Built Nov 17-21, 2026. All steps below are done; see [CHANGELOG.md](CHANGELOG.md)
-for a summary of project changes.
-
-| Day | Date | Step |
-|---|---|---|
-| 1 | Tue Nov 17 | Setup, GitHub repo, Docker sandbox ✅ |
-| 2 | Thu Nov 19 | Agent loop: the AI runs commands in the sandbox by itself ✅ |
-| 3 | Fri Nov 20 - Sat Nov 21 | Honest + sneaky tasks, Groq AI monitor, results with and without monitor ✅ |
-| 4 | Sat Nov 21 | Rules + hybrid monitors, replay comparison, live runs, charts, write-up ✅ |
-
 ## How this was built
 
-Built by Sindhu Kota and a teammate. We used Claude (Anthropic) as a coding assistant and
-tutor: it helped write and test the code and the step-by-step guides. We set up the
+Built by Sindhu Kota and a Sai Kumar. We used Claude (Anthropic) for assistance. We set up the
 environment, ran every experiment on our own machines, worked through setup issues, and
 checked the results. The numbers in this repo come from our own runs.
 
