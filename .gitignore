@@ -11,6 +11,9 @@ venv/
 logs/
 results/raw/
 
+# Local documentation and notes
+/docs/
+
 # Editor / OS files
 .vscode/
 .DS_Store

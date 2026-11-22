@@ -40,9 +40,6 @@ ai-control-project/
 ├── README.md              <- you are here
 ├── .gitignore             <- files we never upload (like .env)
 ├── .env.example           <- template for API keys (real keys go in .env)
-├── docs/
-│   ├── STEP1_SETUP.md     <- beginner guide for Day 1
-│   └── TEAM_NOTES.md      <- our shared daily notes and to-do list
 ├── sandbox/
 │   ├── Dockerfile         <- builds the locked playroom
 │   └── workspace/         <- files the agent works on (all fake)
