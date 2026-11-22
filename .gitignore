@@ -13,6 +13,9 @@ results/raw/
 
 # Local planning and team notes
 LOCAL_REFERENCE.md
+CHANGELOG.md
+
+docs
 
 # Editor / OS files
 .vscode/
