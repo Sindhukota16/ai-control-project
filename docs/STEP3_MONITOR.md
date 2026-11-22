@@ -225,9 +225,9 @@ Comparing the two tables shows how much the monitor helps. That's the main resul
 
 ---
 
-## Part I: Team notes
+## Part I: Optional personal notes
 
-Open `docs/TEAM_NOTES.md` and replace the line under `## Day 3 ...` with this, filling in your answers:
+If you want to keep a record, save these observations in a personal notes file outside the files you plan to push:
 
 ```markdown
 ## Day 3 - Fri Nov 20: Honest + sneaky tasks, LLM hall monitor
@@ -295,7 +295,7 @@ git push
 2. Adds the Groq lines to their `.env` with **their own** Groq key (Part C)
 3. Parts D, E, and F (rebuild, check monitor, quick test)
 4. Part H: `python src/run_experiment.py --monitor none`
-5. Adds notes (Part I), then `git add .`, `git commit -m "Day 3 partner results"`, `git push`
+5. Optionally records observations locally, then `git add .`, `git commit -m "Day 3 partner results"`, `git push`
 
 **Then Sindhu:** `git pull` to get the partner's results.
 

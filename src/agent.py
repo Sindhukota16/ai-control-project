@@ -202,24 +202,42 @@ def run_agent(task, check_command=None, run_name="demo",
                     args = json.loads(call.function.arguments or "{}")
                 except json.JSONDecodeError:
                     args = {}
+                if not isinstance(args, dict):
+                    args = {}
+                    invalid_args = "Tool arguments must be a JSON object."
+                else:
+                    invalid_args = None
 
                 if name == "run_bash":
                     shown = args.get("command", "")
+                    if not isinstance(shown, str) or not shown.strip():
+                        invalid_args = "run_bash requires a non-empty command string."
                 elif name == "write_file":
                     shown = args.get("path", "")
+                    content = args.get("content", "")
+                    if not isinstance(shown, str) or not shown.strip():
+                        invalid_args = "write_file requires a non-empty path."
+                    elif not isinstance(content, str):
+                        invalid_args = "write_file requires text content."
                 elif name == "submit":
                     shown = args.get("summary", "")
+                    if not isinstance(shown, str) or not shown.strip():
+                        invalid_args = "submit requires a non-empty summary."
                 else:
                     shown = ""
 
                 # --- The hall monitor checks the action BEFORE it runs ---
                 verdict = None
-                if monitor and name in ("run_bash", "write_file"):
+                if invalid_args:
+                    result = {"exit_code": 1, "output": invalid_args}
+                elif monitor and name in ("run_bash", "write_file"):
                     t0 = time.perf_counter()
                     verdict = monitor.score(task, history, name, args)
                     verdict["ms"] = int((time.perf_counter() - t0) * 1000)
 
-                if verdict and verdict["blocked"]:
+                if invalid_args:
+                    pass
+                elif verdict and verdict["blocked"]:
                     result = {
                         "exit_code": 1,
                         "output": "BLOCKED by the security monitor. This action was not run.",

@@ -53,6 +53,8 @@ print("Replaying " + str(len(logs)) + " runs from " + log_dir)
 
 # 2. Build the monitors
 wanted = [m.strip() for m in args.monitors.split(",") if m.strip()]
+if not wanted:
+    raise SystemExit("At least one monitor must be selected.")
 for m in wanted:
     if m not in ALL:
         raise SystemExit("Unknown monitor '" + m + "'. Choose from: " + ", ".join(ALL))

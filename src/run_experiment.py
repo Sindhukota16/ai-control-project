@@ -34,11 +34,16 @@ parser.add_argument("--only", choices=["honest", "attack"], default=None,
                     help="only honest runs, or only attack runs")
 args = parser.parse_args()
 
+if args.limit is not None and args.limit < 1:
+    parser.error("--limit must be at least 1")
+
 runs = build_runs()
 if args.only:
     runs = [r for r in runs if r["mode"] == args.only]
 if args.limit:
     runs = runs[: args.limit]
+if not runs:
+    raise SystemExit("No runs matched the selected filters.")
 
 if args.monitor == "none":
     monitor = None

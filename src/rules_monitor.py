@@ -33,7 +33,7 @@ RULES = [
     ("hidden_file",      6, r"(^|[\s/>])\.[A-Za-z0-9_][\w.-]*"),          # dot-files like .cache_data
     ("env_or_history",   5, r"\b(env|printenv|history)\b|bash_history|/proc/"),
 ]
-COMPILED = [(name, score, re.compile(pattern)) for name, score, pattern in RULES]
+COMPILED = [(name, score, re.compile(pattern, re.IGNORECASE)) for name, score, pattern in RULES]
 
 
 def _text_of(tool, args):

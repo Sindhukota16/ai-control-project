@@ -11,6 +11,9 @@ venv/
 logs/
 results/raw/
 
+# Local planning and team notes
+LOCAL_REFERENCE.md
+
 # Editor / OS files
 .vscode/
 .DS_Store

@@ -10,6 +10,24 @@ import subprocess
 
 IMAGE_NAME = "ai-control-sandbox"
 CONTAINER_NAME = "ai-control-sandbox-run"
+MAX_OUTPUT_CHARS = 4000
+MAX_WRITE_CHARS = 2_000_000
+
+
+def _safe_workspace_path(path):
+    """Validate a path before passing it to the container shell."""
+    path = str(path or "").replace("\\", "/").strip()
+    if not path:
+        raise ValueError("A file path is required.")
+    if path.startswith("/"):
+        raise ValueError("File paths must be relative to /workspace.")
+
+    parts = path.split("/")
+    if any(part in ("", ".", "..") for part in parts):
+        raise ValueError("File paths cannot contain empty segments, '.' or '..'.")
+    if not parts:
+        raise ValueError("A file path is required.")
+    return "/".join(parts)
 
 
 def start():
@@ -32,6 +50,8 @@ def start():
 
 def run_command(command, timeout=30):
     """Run one bash command inside the playroom and return what it printed."""
+    if not isinstance(command, str) or not command.strip():
+        return {"exit_code": -1, "output": "A command is required."}
     try:
         result = subprocess.run(
             ["docker", "exec", CONTAINER_NAME, "bash", "-c", command],
@@ -42,25 +62,38 @@ def run_command(command, timeout=30):
     except subprocess.TimeoutExpired:
         return {"exit_code": -1, "output": "Command took too long and was stopped."}
 
-    output = (result.stdout + result.stderr)[-4000:]  # keep it short
+    output = (result.stdout + result.stderr)[-MAX_OUTPUT_CHARS:]  # keep it short
     return {"exit_code": result.returncode, "output": output}
 
 
 def write_file(path, content):
     """Create or replace a file inside the playroom (path is relative to /workspace)."""
-    result = subprocess.run(
-        [
-            "docker", "exec", "-i", CONTAINER_NAME,
-            "bash", "-c",
-            'd="${1%/*}"; if [ "$d" != "$1" ]; then mkdir -p "$d"; fi; cat > "$1"',
-            "_", path,
-        ],
-        input=content,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        safe_path = _safe_workspace_path(path)
+    except ValueError as exc:
+        return {"exit_code": 1, "output": str(exc)}
+    if not isinstance(content, str):
+        return {"exit_code": 1, "output": "File content must be text."}
+    if len(content) > MAX_WRITE_CHARS:
+        return {"exit_code": 1, "output": "File content exceeds the 2 MB write limit."}
+
+    try:
+        result = subprocess.run(
+            [
+                "docker", "exec", "-i", CONTAINER_NAME,
+                "bash", "-c",
+                'd="${1%/*}"; if [ "$d" != "$1" ]; then mkdir -p -- "$d"; fi; cat > "$1"',
+                "_", safe_path,
+            ],
+            input=content,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except subprocess.TimeoutExpired:
+        return {"exit_code": -1, "output": "File write took too long and was stopped."}
     if result.returncode == 0:
-        return {"exit_code": 0, "output": "Saved " + path}
+        return {"exit_code": 0, "output": "Saved " + safe_path}
     return {"exit_code": result.returncode, "output": result.stderr[-2000:]}
 
 

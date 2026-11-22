@@ -183,10 +183,10 @@ Each is 8 runs (up to about 80 Gemini requests). Look at the `AI calls: ... of .
 
 ---
 
-## Part H: Send Claude the results, then team notes
+## Part H: Record and review the results
 
-1. **Copy the replay summary table** from your terminal (or send a screenshot) to Claude. Claude will add the results to `README.md`, `results/RESULTS.md`, and the team notes.
-2. Meanwhile, open `docs/TEAM_NOTES.md`, find the `## Day 4` section, and add:
+1. **Save the replay summary table** from your terminal. Use it when updating `README.md` and `results/RESULTS.md`.
+2. Optionally save your own observations in a personal notes file. Personal notes are not required to reproduce the experiment and should not be pushed to GitHub.
 
 ```markdown
 ### Day 4 results: monitor comparison (replay of the no-monitor run)

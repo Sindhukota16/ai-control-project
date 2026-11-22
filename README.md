@@ -114,7 +114,6 @@ ai-control-project/
 │   ├── STEP2_AGENT.md     <- beginner guide for Day 2
 │   ├── STEP3_MONITOR.md   <- beginner guide for Day 3
 │   ├── STEP4_COMPARE.md   <- beginner guide for Day 4 (comparing monitors)
-│   └── TEAM_NOTES.md      <- our shared daily notes, findings, and problems
 ├── results/
 │   ├── RESULTS.md         <- full results, tables, limits
 │   ├── chart_*.png        <- charts (made by src/make_charts.py)
@@ -173,8 +172,8 @@ Beginner step-by-step guides are in [docs/](docs/).
 
 ## Status and timeline
 
-Built Nov 17-21, 2026. All steps below are done; the day-by-day log is in
-[docs/TEAM_NOTES.md](docs/TEAM_NOTES.md) and [CHANGELOG.md](CHANGELOG.md).
+Built Nov 17-21, 2026. All steps below are done; see [CHANGELOG.md](CHANGELOG.md)
+for a summary of project changes.
 
 | Day | Date | Step |
 |---|---|---|
@@ -187,8 +186,8 @@ Built Nov 17-21, 2026. All steps below are done; the day-by-day log is in
 
 Built by Sindhu Kota and a teammate. We used Claude (Anthropic) as a coding assistant and
 tutor: it helped write and test the code and the step-by-step guides. We set up the
-environment, ran every experiment on our own machines, hit and fixed the problems recorded in
-the team notes, and checked the results. The numbers in this repo come from our own runs.
+environment, ran every experiment on our own machines, worked through setup issues, and
+checked the results. The numbers in this repo come from our own runs.
 
 ## Cost
 

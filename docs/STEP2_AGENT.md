@@ -198,7 +198,7 @@ Log saved to: logs\step2_demo_20261119_141502.json
 > The `logs` folder is **not** uploaded to GitHub (it's in `.gitignore`), so each person keeps their own.
 
 ### Run it 2–3 more times
-Run `python src/agent.py` again a couple of times and compare. Does the AI take the same steps every time? (Usually not!) Write what you notice in `docs/TEAM_NOTES.md` (Part I).
+Run `python src/agent.py` again a couple of times and compare. Does the AI take the same steps every time? (Usually not!) If useful, record what you notice in your own local notes.
 
 > **Free-tier notes**
 > - `(Google's server is busy, waiting 15 seconds...)` or `(free-tier limit hit, waiting ...)` is fine. The code waits and tries again by itself.
@@ -208,9 +208,9 @@ Run `python src/agent.py` again a couple of times and compare. Does the AI take 
 
 ---
 
-## Part I: Update the team notes
+## Part I: Optional personal notes
 
-Open `docs/TEAM_NOTES.md` and replace the line under `## Day 2 ...` with this, filling in your answers:
+If you want to keep a record, save these observations in a personal notes file outside the files you plan to push:
 
 ```markdown
 ## Day 2 - Thu Nov 19: Agent loop
@@ -268,10 +268,10 @@ git push
 **Then your friend:**
 1. Runs `git pull` (this brings all the new files)
 2. Does **Part C to Part H** with their **own** key
-3. Adds their notes to `TEAM_NOTES.md` (Part I)
-4. Runs `git add .`, then `git commit -m "Day 2 notes from partner"`, then `git push`
+3. Optionally records observations in a personal notes file; do not commit personal notes
+4. Runs `git add .`, then `git commit -m "Day 2 experiment"`, then `git push`
 
-**Then Sindhu** runs `git pull` to get the partner's notes.
+**Then Sindhu** runs `git pull` to get the partner's project changes.
 
 ---
 

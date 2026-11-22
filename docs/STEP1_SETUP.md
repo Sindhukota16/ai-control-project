@@ -262,13 +262,13 @@ Your friend does:
 4. **C2**, using Sindhu's repo link. **Skip C3**: the files download automatically.
 5. **File > Open Folder** > `C:\Projects\ai-control-project`, then **Terminal > New Terminal**
 6. **Part D** (build and test)
-7. Opens `docs/TEAM_NOTES.md`, ticks the Day 1 boxes, writes one thing they learned, then:
+7. Optionally records any observations in a personal notes file. Personal notes are not needed to run the project and should not be pushed to GitHub.
    ```bash
    git add .
-   git commit -m "Day 1 notes from partner"
+   git commit -m "Day 1 setup verification"
    git push
    ```
-8. Sindhu then runs `git pull` to get those notes. **That's how you share work every day.**
+8. Sindhu runs `git pull` to get any project changes the friend pushed.
 
 ---
 
